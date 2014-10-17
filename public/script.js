@@ -38,10 +38,11 @@ tankContainer.position.y = 0;
 
 stage.addChild(tankContainer);
 
-socket.on('current_player', function (data) {
-  var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-  tank.position.x = Math.random() * w - 32;
-  tank.position.y = Math.random() * h - 32;
+socket.on('new_player', function (data) {
+  console.log(data);
+  var tank = PIXI.Sprite.fromFrame(data.player.color + '.png');
+  tank.position.x = 300;
+  tank.position.y = 300;
   tank.anchor.x = 0.5;
   tank.anchor.y = 0.5;
   tank.id = data.id;
