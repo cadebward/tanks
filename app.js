@@ -6,7 +6,7 @@ var io = require('socket.io')(server);
 app.use(express.static(__dirname + '/public'));
 
 var players = [];
-var colors = ['red', 'green', 'yellow', 'blue', 'purple', 'cyan', 'orange', 'pink'];
+var colors = ['green', 'red', 'yellow', 'blue', 'purple', 'cyan', 'orange', 'pink'];
 var i = 0;
 
 io.on('connection', function (socket) {
