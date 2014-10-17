@@ -1,16 +1,16 @@
 {"frames": {
-  "projectile.png":
+  "explode.png":
   {
-    "frame": {"x":0,"y":0,"w":23.5,"h":97},
+    "frame": {"x":0,"y":0,"w":128,"h":128},
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
     "sourceSize": {"w":32,"h":32}
   }},
   "meta": {
-    "image": "missile.png",
+    "image": "explosion.png",
     "format": "RGBA8888",
-    "size": {"w":400,"h":97},
+    "size": {"w":5120,"h":128},
     "scale": "1"
   }
 }
