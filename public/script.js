@@ -42,30 +42,31 @@ socket.on('current_player', function (data) {
   tank.position.y = Math.random() * h - 32;
   tank.anchor.x = 0.5;
   tank.anchor.y = 0.5;
+  tank.id = data.id;
   tanks.push(tank);
   tankContainer.addChild(tank);
-  socket.emit('current_player_completed', {x: tank.position.x, y: tank.position.y, color: data.color});
+  socket.emit('current_player_completed', {x: tank.position.x, y: tank.position.y, color: data.color, id: data.id});
 });
 
 socket.on('new_player_joined', function (data) {
-  console.log('new player joined');
+  console.log(data);
   var tank = PIXI.Sprite.fromFrame(data.color + '.png');
   tank.position.x = data.x;
   tank.position.y = data.y;
   tank.anchor.x = 0.5;
   tank.anchor.y = 0.5;
+  tank.id = data.id;
   tanks.push(tank);
   tankContainer.addChild(tank);
 });
 
-socket.on('load_other_players', function (data) {
-  var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-  tank.position.x = data.x;
-  tank.position.y = data.y;
-  tank.anchor.x = 0.5;
-  tank.anchor.y = 0.5;
-  tanks.push(tank);
-  tankContainer.addChild(tank);
+socket.on('remove_tank', function (data) {
+  console.log(tanks);
+  for (var i = 0; i < tanks.length; i++) {
+    if (tanks[i].id == data.id) {
+      tankContainer.removeChild(tanks[i]);
+    }
+  }
 });
 
 
