@@ -16,7 +16,6 @@ loader.load();
 
 // holder to store aliens
 var tanks = [];
-var tankFrames = ["tankGreen.png", "tankRed.png"];
 
 var count = 0;
 
