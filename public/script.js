@@ -101,23 +101,26 @@ function animate() {
   // render the stage
   renderer.render(stage);
 
-  var angle = (TANK.rotation * (180/Math.PI)) % 360;
+  var angle = ((TANK.rotation % 360) * (180/Math.PI)) % 360;
+
+  console.log(angle)
 
   // tank rotate on key press
-  if (keys[37] || keys[65]) TANK.rotation -= 0.05;
+  if (keys[37] || keys[65]) TANK.rotation -= 0.08;
   if (keys[38] || keys[87]) driveForward(angle);
-  if (keys[39] || keys[68]) TANK.rotation += 0.05;
+  if (keys[39] || keys[68]) TANK.rotation += 0.08;
   if (keys[40] || keys[83]) driveBackward(angle);
 
   requestAnimFrame(animate);
 }
 
 function driveForward(angle) {
-  TANK.position.y += 1.5 * Math.sin(angle);
-  TANK.position.x += 1.5 * Math.cos(angle);
+  TANK.position.x += 4 * Math.cos(angle);
+  TANK.position.y += 4 * Math.sin(angle);
+  console.log(angle, 4 * Math.cos(angle), 4 * Math.sin(angle));
 }
 
 function driveBackward(angle) {
-  TANK.position.x -= 1.5 * Math.cos(angle);
-  TANK.position.y -= 1.5 * Math.sin(angle);
+  TANK.position.x -= 4 * Math.cos(angle);
+  TANK.position.y -= 4 * Math.sin(angle);
 }
