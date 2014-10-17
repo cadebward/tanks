@@ -1,5 +1,7 @@
 var socket = io.connect('http://localhost');
 
+var TANK;
+
 // create an array of assets to load
 var assetsToLoader = [ "sprite.json"];
 
@@ -44,6 +46,7 @@ socket.on('current_player', function (data) {
   tank.anchor.y = 0.5;
   tank.id = data.id;
   tanks.push(tank);
+  TANK = tank;
   tankContainer.addChild(tank);
   socket.emit('current_player_completed', {x: tank.position.x, y: tank.position.y, color: data.color, id: data.id});
 });
@@ -69,6 +72,26 @@ socket.on('remove_tank', function (data) {
   }
 });
 
+var keys = [];
+
+// listen for key press
+window.addEventListener('keydown', function (e) {
+  keys[e.keyCode] = true;
+});
+
+window.addEventListener('keyup', function (e) {
+  keys[e.keyCode] = false;
+});
+
+
+
+
+// space 32
+// w 87
+// s 83
+// a 65
+// d 68
+
 
 function onAssetsLoaded() {
   requestAnimFrame(animate);
@@ -77,5 +100,24 @@ function onAssetsLoaded() {
 function animate() {
   // render the stage
   renderer.render(stage);
+
+  var angle = (TANK.rotation * (180/Math.PI)) % 360;
+
+  // tank rotate on key press
+  if (keys[37] || keys[65]) TANK.rotation -= 0.05;
+  if (keys[38] || keys[87]) driveForward(angle);
+  if (keys[39] || keys[68]) TANK.rotation += 0.05;
+  if (keys[40] || keys[83]) driveBackward(angle);
+
   requestAnimFrame(animate);
+}
+
+function driveForward(angle) {
+  TANK.position.x += 1.5 * Math.cos(angle);
+  TANK.position.y += 1.5 * Math.sin(angle);
+}
+
+function driveBackward(angle) {
+  TANK.position.x -= 1.5 * Math.cos(angle);
+  TANK.position.y -= 1.5 * Math.sin(angle);
 }
