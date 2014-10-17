@@ -113,8 +113,8 @@ function animate() {
 }
 
 function driveForward(angle) {
-  TANK.position.x += 1.5 * Math.cos(angle);
   TANK.position.y += 1.5 * Math.sin(angle);
+  TANK.position.x += 1.5 * Math.cos(angle);
 }
 
 function driveBackward(angle) {
