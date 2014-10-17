@@ -36,38 +36,16 @@ tankContainer.position.y = 0;
 
 stage.addChild(tankContainer);
 
-socket.on('current_player', function (data) {
-  var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-  tank.position.x = Math.random() * w - 32;
-  tank.position.y = Math.random() * h - 32;
-  tank.anchor.x = 0.5;
-  tank.anchor.y = 0.5;
-  tanks.push(tank);
-  tankContainer.addChild(tank);
-  socket.emit('current_player_completed', {x: tank.position.x, y: tank.position.y, color: data.color});
-});
-
-socket.on('new_player_joined', function (data) {
-  console.log('new player joined');
-  var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-  tank.position.x = data.x;
-  tank.position.y = data.y;
+socket.on('new_player', function (data) {
+  console.log(data);
+  var tank = PIXI.Sprite.fromFrame(data.player.color + '.png');
+  tank.position.x = 300;
+  tank.position.y = 300;
   tank.anchor.x = 0.5;
   tank.anchor.y = 0.5;
   tanks.push(tank);
   tankContainer.addChild(tank);
 });
-
-socket.on('load_other_players', function (data) {
-  var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-  tank.position.x = data.x;
-  tank.position.y = data.y;
-  tank.anchor.x = 0.5;
-  tank.anchor.y = 0.5;
-  tanks.push(tank);
-  tankContainer.addChild(tank);
-});
-
 
 function onAssetsLoaded() {
   requestAnimFrame(animate);
