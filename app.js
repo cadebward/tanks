@@ -12,27 +12,17 @@ var i = 0;
 
 io.on('connection', function (player) {
 
-  player.emit('current_player', { color: colors[i%8], id: uuid.v1()});
-  i++;
-
-  player.on('current_player_completed', function (playerData) {
-
-    // update player data
-    player.x = playerData.x;
-    player.y = playerData.y;
-    player.color = playerData.color;
-    player.id = playerData.id;
-
-    // adds new player to array
+  player.on('player_created', function (data) {
+    player.x = data.x;
+    player.y = data.y;
     players.push(player);
 
+    // send to other player a new p connected
+    player.broadcast.emit('new_player_joined', {x: player.x, y: player.y, id: player.id});
+
+    // send to current user all other tanks
     players.forEach(function (sock) {
-      if (sock != player) {
-        // when a new player joins, tell all currently connected players
-        sock.emit('new_player_joined', playerData);
-        // when a new player joins, tell HIM about all connected players
-        player.emit('new_player_joined', {x: sock.x, y: sock.y, color: sock.color, id: sock.id});
-      }
+      player.emit('load_other_tanks', {x: sock.x, y: sock.y, id: sock.id});
     });
   });
 
@@ -40,8 +30,12 @@ io.on('connection', function (player) {
   player.on('disconnect', function () {
     players.splice(players.indexOf(player), 1);
     players.forEach(function (sock) {
-      sock.emit('remove_tank', {id: player.id});
+      sock.emit('remove_tank', {id: player.tankID});
     });
+  });
+
+  player.on('update_current_player', function (data) {
+    player.broadcast.emit('update_locations', {x: data.x, y: data.y, rotation: data.rotation, id: player.id});
   });
 });
 

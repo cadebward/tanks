@@ -5,17 +5,22 @@ var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 var game = new Phaser.Game(w, h, Phaser.AUTO, 'tanks', { preload: preload, create: create, update: update }, true);
 var tank;
 
+// keep track of all players
+var tanks = [];
+
 function preload() {
-    game.load.spritesheet('tanks', 'tanks.png', 32, 32, 18);
+    game.load.atlas('tanks', 'tanks.png', 'tanks.json');
 }
 
 function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  tank = game.add.sprite(200, 200, 'tanks');
+  tank = game.add.sprite(Math.random() * w - 32, Math.random() * h - 32, 'tanks');
+  tank.frameName = 'red.png';
   tank.anchor.setTo(0.5, 0.5);
-  tank.animations.add('forward', [7, 6, 5, 4, 3, 2, 1, 0], 8, true, true);
-  tank.animations.add('backward', [0, 1, 2, 3, 4, 5, 6, 7], 8, true, true);
+  tank.animations.add('forward', [7, 6, 5, 4, 3, 2, 1, 0], 5, true, true);
+  tank.animations.add('backward', [0, 1, 2, 3, 4, 5, 6, 7], 5, true, true);
   game.physics.enable(tank, Phaser.Physics.ARCADE);
+  socket.emit('player_created', {x: tank.body.x, y: tank.body.y});
 }
 
 function update() {
@@ -32,89 +37,62 @@ function update() {
     tank.body.angularVelocity = 200;
   }
 
-  if (game.input.keyboard.isDown(Phaser.Keyboard.UP) || game.input.keyboard.isDown(Phaser.Keyboard.W))
-  {
+  if (game.input.keyboard.isDown(Phaser.Keyboard.UP) || game.input.keyboard.isDown(Phaser.Keyboard.W)) {
     game.physics.arcade.velocityFromAngle(tank.angle, 300, tank.body.velocity);
     tank.animations.play('forward');
   } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN) || game.input.keyboard.isDown(Phaser.Keyboard.S)) {
     game.physics.arcade.velocityFromAngle(tank.angle, -300, tank.body.velocity);
     tank.animations.play('backward');
   } else {
-
+    tank.animations.stop();
   }
+
+  socket.emit('update_current_player', {x: tank.position.x, y: tank.position.y, rotation: tank.rotation});
 }
 
-// var TANK;
+socket.on('new_player_joined', function (data) {
+  var new_player = game.add.sprite(data.x, data.y, 'tanks');
+  new_player.frameName = 'red.png';
+  new_player.anchor.setTo(0.5, 0.5);
+  new_player.animations.add('forward', [7, 6, 5, 4, 3, 2, 1, 0], 5, true, true);
+  new_player.animations.add('backward', [0, 1, 2, 3, 4, 5, 6, 7], 5, true, true);
+  game.physics.enable(new_player, Phaser.Physics.ARCADE);
+  new_player.id = data.id;
+  tanks.push(new_player);
+  console.log(tanks);
+});
 
-// // create an array of assets to load
-// var assetsToLoader = [ "sprite.json"];
+socket.on('load_other_tanks', function (data) {
+  var new_player = game.add.sprite(data.x, data.y, 'tanks');
+  new_player.frameName = 'red.png';
+  new_player.anchor.setTo(0.5, 0.5);
+  new_player.animations.add('forward', [7, 6, 5, 4, 3, 2, 1, 0], 5, true, true);
+  new_player.animations.add('backward', [0, 1, 2, 3, 4, 5, 6, 7], 5, true, true);
+  game.physics.enable(new_player, Phaser.Physics.ARCADE);
+  new_player.id = data.id;
+  tanks.push(new_player);
+});
 
-// // create a new loader
-// loader = new PIXI.AssetLoader(assetsToLoader);
+socket.on('remove_tank', function (data) {
+  tanks.forEach(function (item) {
+    if (item.id == data.id) {
+      item.destroy();
+      tanks.splice(tanks.indexOf(item), 1);
+    }
+  });
+});
 
-// // use callback
-// loader.onComplete = onAssetsLoaded;
+// CACHE IS EVIL... sometimes
 
-// //begin load
-// loader.load();
-
-// // holder to store aliens
-// var tanks = [];
-// var tankFrames = ["tankGreen.png", "tankRed.png"];
-
-// var count = 0;
-
-// // create an new instance of a pixi stage
-// var stage = new PIXI.Stage(0xFFFFFF);
-
-// // create a renderer instance.
-// var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-// var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-// var renderer = PIXI.autoDetectRenderer(w, h, null, true);
-
-// // add the renderer view element to the DOM
-// document.body.appendChild(renderer.view);
-
-// // create an empty container
-// var tankContainer = new PIXI.DisplayObjectContainer();
-// tankContainer.position.x = 0;
-// tankContainer.position.y = 0;
-
-// stage.addChild(tankContainer);
-
-// socket.on('current_player', function (data) {
-//   var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-//   tank.position.x = Math.random() * w - 32;
-//   tank.position.y = Math.random() * h - 32;
-//   tank.anchor.x = 0.5;
-//   tank.anchor.y = 0.5;
-//   tank.id = data.id;
-//   tanks.push(tank);
-//   TANK = tank;
-//   tankContainer.addChild(tank);
-//   socket.emit('current_player_completed', {x: tank.position.x, y: tank.position.y, color: data.color, id: data.id});
-// });
-
-// socket.on('new_player_joined', function (data) {
-//   console.log(data);
-//   var tank = PIXI.Sprite.fromFrame(data.color + '.png');
-//   tank.position.x = data.x;
-//   tank.position.y = data.y;
-//   tank.anchor.x = 0.5;
-//   tank.anchor.y = 0.5;
-//   tank.id = data.id;
-//   tanks.push(tank);
-//   tankContainer.addChild(tank);
-// });
-
-// socket.on('remove_tank', function (data) {
-//   console.log(tanks);
-//   for (var i = 0; i < tanks.length; i++) {
-//     if (tanks[i].id == data.id) {
-//       tankContainer.removeChild(tanks[i]);
-//     }
-//   }
-// });
+socket.on('update_locations', function (data) {
+  tanks.forEach(function (item) {
+    if (item.id == data.id) {
+      item.position.x = data.x;
+      item.position.y = data.y;
+      item.rotation = data.rotation;
+    }
+  });
+});
 
 // var keys = [];
 
