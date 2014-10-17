@@ -24,7 +24,7 @@ var stage = new PIXI.Stage(0xFFFFFF);
 // create a renderer instance.
 var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-var renderer = PIXI.autoDetectRenderer(w, h);
+var renderer = PIXI.autoDetectRenderer(w, h, null, true);
 
 // add the renderer view element to the DOM
 document.body.appendChild(renderer.view);
