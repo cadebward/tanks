@@ -8,8 +8,15 @@ var tank;
 // keep track of all players
 var tanks = [];
 
+var drive;
+var hit;
+var fire;
+
 function preload() {
     game.load.atlas('tanks', 'tanks.png', 'tanks.json');
+    game.load.audio('engine', 'engine.mp3');
+    game.load.audio('impact', 'impact.mp3');
+    game.load.audio('shoot', 'shoot.mp3');
 }
 
 function create() {
@@ -21,6 +28,10 @@ function create() {
   tank.animations.add('backward', [0, 1, 2, 3, 4, 5, 6, 7], 5, true, true);
   game.physics.enable(tank, Phaser.Physics.ARCADE);
   socket.emit('player_created', {x: tank.body.x, y: tank.body.y});
+
+  drive = game.add.audio('engine');
+  hit = game.add.audio('impact');
+  fire = game.add.audio('shoot');
 }
 
 function update() {
@@ -37,13 +48,23 @@ function update() {
     tank.body.angularVelocity = 200;
   }
 
+  if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+    fire.play();
+  }
+  if (game.input.keyboard.isDown(Phaser.Keyboard.H)) {
+    fire.stop();
+    hit.play();
+  }
+
   if (game.input.keyboard.isDown(Phaser.Keyboard.UP) || game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+    drive.play();
     game.physics.arcade.velocityFromAngle(tank.angle, 300, tank.body.velocity);
     tank.animations.play('forward');
   } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN) || game.input.keyboard.isDown(Phaser.Keyboard.S)) {
     game.physics.arcade.velocityFromAngle(tank.angle, -300, tank.body.velocity);
     tank.animations.play('backward');
   } else {
+    drive.stop();
     tank.animations.stop();
   }
 
