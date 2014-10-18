@@ -22,15 +22,22 @@ io.on('connection', function (player) {
 
     // send to current user all other tanks
     players.forEach(function (sock) {
-      player.emit('load_other_tanks', {x: sock.x, y: sock.y, id: sock.id});
+      if (player != sock) {
+        player.emit('load_other_tanks', {x: sock.x, y: sock.y, id: sock.id});
+      }
     });
   });
 
   // remove from array on disconnect
   player.on('disconnect', function () {
-    players.splice(players.indexOf(player), 1);
+
+    var i = players.indexOf(player);
+    if (i > -1) {
+      players.splice(i, 1);
+    }
+
     players.forEach(function (sock) {
-      sock.emit('remove_tank', {id: player.tankID});
+      sock.emit('remove_tank', {id: player.id});
     });
   });
 

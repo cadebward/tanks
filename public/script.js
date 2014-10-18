@@ -80,7 +80,7 @@ socket.on('new_player_joined', function (data) {
   game.physics.enable(new_player, Phaser.Physics.ARCADE);
   new_player.id = data.id;
   tanks.push(new_player);
-  console.log(tanks);
+  console.log('new player has joined');
 });
 
 socket.on('load_other_tanks', function (data) {
@@ -92,15 +92,17 @@ socket.on('load_other_tanks', function (data) {
   game.physics.enable(new_player, Phaser.Physics.ARCADE);
   new_player.id = data.id;
   tanks.push(new_player);
+  console.log('loading other tanks');
 });
 
 socket.on('remove_tank', function (data) {
-  tanks.forEach(function (item) {
-    if (item.id == data.id) {
-      item.destroy();
-      tanks.splice(tanks.indexOf(item), 1);
+  console.log('got remove tank event with id: ' + data.id);
+  for (var i = 0; i < tanks.length; i++) {
+    if (tanks[i].id = data.id) {
+      console.log('found a tanker to destroy!')
+      tanks[i].destroy();
     }
-  });
+  }
 });
 
 // CACHE IS EVIL... sometimes
