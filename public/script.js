@@ -80,7 +80,6 @@ socket.on('new_player_joined', function (data) {
   game.physics.enable(new_player, Phaser.Physics.ARCADE);
   new_player.id = data.id;
   tanks.push(new_player);
-  console.log('new player has joined');
 });
 
 socket.on('load_other_tanks', function (data) {
@@ -91,8 +90,8 @@ socket.on('load_other_tanks', function (data) {
   new_player.animations.add('backward', [0, 1, 2, 3, 4, 5, 6, 7], 5, true, true);
   game.physics.enable(new_player, Phaser.Physics.ARCADE);
   new_player.id = data.id;
+  new_player.rotation = data.rotation;
   tanks.push(new_player);
-  console.log('loading other tanks');
 });
 
 socket.on('remove_tank', function (data) {
